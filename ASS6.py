@@ -1,54 +1,102 @@
-# ----------------------------------------
+# -----------------------------------------
 # Medical Expert System
 #
-# Symptoms are used to identify disease
-# based on predefined rules.
-# ----------------------------------------
+# Uses symptoms to predict disease
+# based on rule matching.
+# -----------------------------------------
 
 
 class ExpertSystem:
 
+    def __init__(self):
+
+        # Knowledge Base
+        self.diseases = {
+
+            "Flu": [
+                "fever",
+                "cough",
+                "cold",
+                "body pain"
+            ],
+
+            "Malaria": [
+                "fever",
+                "headache",
+                "vomiting",
+                "sweating"
+            ],
+
+            "Diabetes": [
+                "thirst",
+                "fatigue",
+                "weight loss"
+            ],
+
+            "Heart Disease": [
+                "chest pain",
+                "shortness of breath",
+                "fatigue"
+            ]
+        }
+
+    # Inference Engine
     def diagnose(self, symptoms):
 
-        # Rule Base
+        bestMatch = None
+        maxScore = 0
 
-        if "fever" in symptoms and "cough" in symptoms:
+        # Check every disease
+        for disease, diseaseSymptoms in self.diseases.items():
 
-            return "Possible Disease: Flu"
+            score = 0
 
-        elif "fever" in symptoms and "headache" in symptoms:
+            # Count matching symptoms
+            for symptom in symptoms:
 
-            return "Possible Disease: Malaria"
+                if symptom in diseaseSymptoms:
+                    score += 1
 
-        elif "chest pain" in symptoms and "shortness of breath" in symptoms:
+            # Find highest match
+            if score > maxScore:
 
-            return "Possible Disease: Heart Disease"
+                maxScore = score
+                bestMatch = disease
 
-        elif "thirst" in symptoms and "fatigue" in symptoms:
+        # Result
+        if bestMatch:
 
-            return "Possible Disease: Diabetes"
+            return bestMatch, maxScore
 
-        else:
-
-            return "Disease Not Found"
+        return None, 0
 
 
 # Create Expert System
 system = ExpertSystem()
 
-# User Input
 print("Enter Symptoms Separated by Comma\n")
 
-userSymptoms = input("Symptoms: ").lower()
+# User Input
+userInput = input("Symptoms: ").lower()
 
-# Convert input into list
-symptoms = userSymptoms.split(",")
+# Convert to List
+symptoms = userInput.split(",")
 
-# Remove extra spaces
+# Remove Spaces
 symptoms = [s.strip() for s in symptoms]
 
 # Diagnosis
-result = system.diagnose(symptoms)
+disease, score = system.diagnose(symptoms)
 
-print("\nExpert System Result:")
-print(result)
+# Output
+print("\nExpert System Result:\n")
+
+if disease:
+
+    print("Possible Disease:", disease)
+
+    print("Matching Symptoms:", score)
+
+else:
+
+    print("Disease Not Found")
