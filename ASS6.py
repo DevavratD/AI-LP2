@@ -1,102 +1,32 @@
-# -----------------------------------------
-# Medical Expert System
-#
-# Uses symptoms to predict disease
-# based on rule matching.
-# -----------------------------------------
+# 1. KNOWLEDGE BASE
+# Format: [ [List of Symptoms], "Disease Name", "Advice" ]
+knowledge_base = [
+    (["fever", "cough", "sneezing"], "Common Cold", "Rest and drink warm fluids"),
+    (["fever", "body pain", "headache"], "Flu", "Take paracetamol and rest"),
+    (["fever", "joint pain", "rash"], "Dengue", "Visit a hospital immediately"),
+    (["fever", "dry cough", "loss of smell"], "COVID-19", "Isolate and get tested"),
+    (["stomach pain", "vomiting"], "Infection", "Drink ORS and eat light food")
+]
 
+# 2. INFERENCE ENGINE (Logic)
+def diagnose(user_symptoms):
+    print("\n--- Diagnostic Report ---")
+    
+    for symptoms, disease, advice in knowledge_base:
+        # Check if ALL symptoms of a disease are present in user input
+        if all(s in user_symptoms for s in symptoms):
+            print(f"Result: {disease}")
+            print(f"Advice: {advice}")
+            return # Stop after finding the first match
 
-class ExpertSystem:
+    print("Result: Undetermined")
+    print("Advice: Please consult a doctor for a professional checkup.")
 
-    def __init__(self):
+# 3. USER INTERFACE
+print("Hospital Management Expert System")
+print("Enter symptoms separated by commas (e.g. fever, cough, sneezing):")
 
-        # Knowledge Base
-        self.diseases = {
+# Take input and clean it (strip spaces and lowercase)
+user_input = [s.strip().lower() for s in input("> ").split(",")]
 
-            "Flu": [
-                "fever",
-                "cough",
-                "cold",
-                "body pain"
-            ],
-
-            "Malaria": [
-                "fever",
-                "headache",
-                "vomiting",
-                "sweating"
-            ],
-
-            "Diabetes": [
-                "thirst",
-                "fatigue",
-                "weight loss"
-            ],
-
-            "Heart Disease": [
-                "chest pain",
-                "shortness of breath",
-                "fatigue"
-            ]
-        }
-
-    # Inference Engine
-    def diagnose(self, symptoms):
-
-        bestMatch = None
-        maxScore = 0
-
-        # Check every disease
-        for disease, diseaseSymptoms in self.diseases.items():
-
-            score = 0
-
-            # Count matching symptoms
-            for symptom in symptoms:
-
-                if symptom in diseaseSymptoms:
-                    score += 1
-
-            # Find highest match
-            if score > maxScore:
-
-                maxScore = score
-                bestMatch = disease
-
-        # Result
-        if bestMatch:
-
-            return bestMatch, maxScore
-
-        return None, 0
-
-
-# Create Expert System
-system = ExpertSystem()
-
-print("Enter Symptoms Separated by Comma\n")
-
-# User Input
-userInput = input("Symptoms: ").lower()
-
-# Convert to List
-symptoms = userInput.split(",")
-
-# Remove Spaces
-symptoms = [s.strip() for s in symptoms]
-
-# Diagnosis
-disease, score = system.diagnose(symptoms)
-
-# Output
-print("\nExpert System Result:\n")
-
-if disease:
-
-    print("Possible Disease:", disease)
-
-    print("Matching Symptoms:", score)
-
-else:
-
-    print("Disease Not Found")
+diagnose(user_input)

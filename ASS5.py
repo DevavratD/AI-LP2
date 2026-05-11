@@ -1,49 +1,38 @@
-import random
+def pizza_bot():
+    # 1. KNOWLEDGE BASE: Prices and Info
+    menu = {
+        "pizza": "We have Margherita, Pepperoni, and Veggie pizzas.",
+        "size": "Available sizes: Small ($8), Medium ($12), Large ($16).",
+        "toppings": "Extra toppings: Cheese, Mushrooms, Olives, and Jalapenos.",
+        "delivery": "Delivery takes 30-45 minutes depending on your location.",
+        "offer": "Buy 1 Large pizza and get a Garlic Bread free!",
+        "bye": "Enjoy your meal! Your order is being processed."
+    }
 
+    print("--- 🍕 Welcome to Pizza Hub Support ---")
+    print("How can I help you? (Ask about: Menu, Size, Toppings, Delivery, or Offers)")
 
-class ChatBot:
-    def __init__(self):
+    while True:
+        # 2. USER INPUT
+        user_input = input("\nYou: ").lower().strip()
 
-        # in exam make more responses and keywords to make the chatbot more interactive and engaging.
-        self.responses = {
-            ("hi", "hello", "hey"): ["Hello!", "Hi there!", "Hey!"],
-            ("how are you", "how are you doing"): [
-                "I am fine.",
-                "Doing great!",
-                "All good.",
-            ],
-            ("what is your name", "who are you"): ["I am PyBot.", "My name is PyBot."],
-            ("bye", "goodbye"): ["Goodbye!", "See you soon!"],
-            ("python",): ["Python is a programming language."],
-            ("ai", "artificial intelligence"): [
-                "AI is simulation of human intelligence."
-            ],
-        }
+        # Exit Condition
+        if "bye" in user_input or "order" in user_input:
+            print("Bot:", menu["bye"])
+            break
 
-    # Find Best Response
-    def getResponse(self, userInput):
+        # 3. RULE MATCHING (Inference Engine)
+        found = False
+        for keyword in menu:
+            if keyword in user_input:
+                print("Bot:", menu[keyword])
+                found = True
+                break
+        
+        # 4. FALLBACK
+        if not found:
+            print("Bot: I'm not sure about that. Would you like to see our 'menu' or check 'delivery' times?")
 
-        userInput = userInput.lower()
-
-        for keywords, replies in self.responses.items():
-            for word in keywords:
-                if word in userInput:
-                    return random.choice(replies)
-
-        return "Sorry, I do not understand."
-
-
-# Create Bot
-bot = ChatBot()
-
-print("ChatBot: Hello! Type 'bye' to exit.\n")
-
-while True:
-    user = input("You: ")
-
-    response = bot.getResponse(user)
-
-    print("ChatBot:", response)
-
-    if user.lower() == "bye":
-        break
+# Run the Chatbot
+if __name__ == "__main__":
+    pizza_bot()

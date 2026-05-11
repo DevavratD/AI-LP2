@@ -1,106 +1,72 @@
-class Graph:
+class Kruskal:
+    def __init__(self, vertices):
+        self.V = vertices
+        self.graph = [] # Stores [u, v, w]
 
-    def __init__(self):
-
-        self.graph = []
-
-    # Add Edge
-    def addEdge(self, u, v, w):
-
+    def add_edge(self, u, v, w):
         self.graph.append([u, v, w])
 
-    # Find Parent
-    def find(self, parent, node):
+    # Find the 'Set' of an element (with Path Compression)
+    def find(self, parent, i):
+        if parent[i] == i:
+            return i
+        # Path Compression: Connects node directly to the root
+        parent[i] = self.find(parent, parent[i])
+        return parent[i]
 
-        if parent[node] == node:
-            return node
+    # Union of two sets
+    def union(self, parent, rank, x, y):
+        root_x = self.find(parent, x)
+        root_y = self.find(parent, y)
 
-        return self.find(parent, parent[node])
+        # Union by Rank: Keep the tree flat
+        if rank[root_x] < rank[root_y]:
+            parent[root_x] = root_y
+        elif rank[root_x] > rank[root_y]:
+            parent[root_y] = root_x
+        else:
+            parent[root_y] = root_x
+            rank[root_x] += 1
 
-    # Union
-    def union(self, parent, x, y):
+    def run_kruskal(self):
+        result = [] # Stores the MST
+        i, e = 0, 0 # Index for sorted edges and MST edges
 
-        parent[x] = y
+        # 1. GREEDY STEP: Sort all edges by weight
+        self.graph.sort(key=lambda item: item[2])
 
-    # Kruskal Algorithm
-    def kruskal(self):
+        parent = []
+        rank = []
 
-        result = []
+        # Create V single-element sets
+        for node in range(self.V):
+            parent.append(node)
+            rank.append(0)
 
-        # Sort edges according to weight
-        self.graph.sort(key=lambda edge: edge[2])
-
-        # Create parent dictionary
-        parent = {}
-
-        # Get all unique vertices
-        vertices = set()
-
-        for u, v, w in self.graph:
-
-            vertices.add(u)
-            vertices.add(v)
-
-        # Initially every node is parent of itself
-        for vertex in vertices:
-            parent[vertex] = vertex
-
-        edgeCount = 0
-        index = 0
-
-        # MST contains V-1 edges
-        while edgeCount < len(vertices) - 1:
-
-            u, v, w = self.graph[index]
-
-            index += 1
-
+        # 2. Process edges until MST has V-1 edges
+        while e < self.V - 1:
+            u, v, w = self.graph[i]
+            i += 1
             x = self.find(parent, u)
             y = self.find(parent, v)
 
-            # Avoid cycle
+            # If including this edge doesn't cause a cycle
             if x != y:
-
+                e += 1
                 result.append([u, v, w])
+                self.union(parent, rank, x, y)
 
-                self.union(parent, x, y)
+        # Print Result
+        print("Edge \tWeight")
+        for u, v, weight in result:
+            print(f"{u} - {v} \t{weight}")
 
-                edgeCount += 1
+# --- Execution ---
+g = Kruskal(4)
+g.add_edge(0, 1, 10)
+g.add_edge(0, 2, 6)
+g.add_edge(0, 3, 5)
+g.add_edge(1, 3, 15)
+g.add_edge(2, 3, 4)
 
-        # Print MST
-        print("Edges in Minimum Spanning Tree:\n")
-
-        totalCost = 0
-
-        for u, v, w in result:
-
-            print(u, "--", v, "=", w)
-
-            totalCost += w
-
-        print("\nMinimum Cost =", totalCost)
-
-
-# ------------------------------------------------
-# Graph Visualization
-#
-#         10
-#     A -------- B
-#     | \        |
-#   6 |  \5      | 15
-#     |   \      |
-#     C -------- D
-#           4
-#
-# ------------------------------------------------
-
-
-g = Graph()
-
-g.addEdge('A', 'B', 10)
-g.addEdge('A', 'C', 6)
-g.addEdge('A', 'D', 5)
-g.addEdge('B', 'D', 15)
-g.addEdge('C', 'D', 4)
-
-g.kruskal()
+g.run_kruskal()

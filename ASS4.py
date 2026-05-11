@@ -1,113 +1,45 @@
-class NQueen:
+# Configuration
+N = 4
 
-    def __init__(self, n):
 
-        self.n = n
-
-        # Create empty board
-        self.board = []
-
-        for i in range(n):
-
-            row = []
-
-            for j in range(n):
-                row.append(0)
-
-            self.board.append(row)
-
-    # Display Board
-    def display(self):
-
-        print()
-
-        for row in self.board:
-            print(row)
-
-    # Check Safe Position
-    def isSafe(self, row, col):
-
-        # Check left side
-        for i in range(col):
-
-            if self.board[row][i] == 1:
-                return False
-
-        # Upper diagonal
-        i = row
-        j = col
-
-        while i >= 0 and j >= 0:
-
-            if self.board[i][j] == 1:
-                return False
-
-            i -= 1
-            j -= 1
-
-        # Lower diagonal
-        i = row
-        j = col
-
-        while i < self.n and j >= 0:
-
-            if self.board[i][j] == 1:
-                return False
-
-            i += 1
-            j -= 1
-
+def solve_n_queens(col, board, rows, lower_diag, upper_diag):
+    # BASE CASE: If all queens are placed, we found a solution
+    if col == N:
         return True
 
-    # Solve using Backtracking + Branch and Bound
-    def solve(self, col):
+    for row in range(N):
+        # BRANCH AND BOUND: Prune the search if a constraint is violated
+        # lower_diag index: row + col
+        # upper_diag index: (N-1) + col - row
+        if (
+            rows[row] == 0
+            and lower_diag[row + col] == 0
+            and upper_diag[N - 1 + col - row] == 0
+        ):
+            # 1. PLACE QUEEN
+            board[row][col] = "Q"
+            rows[row] = lower_diag[row + col] = upper_diag[N - 1 + col - row] = 1
 
-        # All queens placed
-        if col >= self.n:
-            return True
+            # 2. RECURSIVE STEP: Move to the next column
+            if solve_n_queens(col + 1, board, rows, lower_diag, upper_diag):
+                return True
 
-        # Try every row
-        for row in range(self.n):
+            # 3. BACKTRACKING: Remove queen and reset constraints for next attempt
+            board[row][col] = "."
+            rows[row] = lower_diag[row + col] = upper_diag[N - 1 + col - row] = 0
 
-            # Branch and Bound Condition
-            if self.isSafe(row, col):
-
-                # Place Queen
-                self.board[row][col] = 1
-
-                # Recursive Call
-                if self.solve(col + 1):
-                    return True
-
-                # Backtrack
-                self.board[row][col] = 0
-
-        return False
+    return False
 
 
-# ----------------------------------------
-# 4 Queen Visualization
-#
-# [0, 0, 1, 0]
-# [1, 0, 0, 0]
-# [0, 0, 0, 1]
-# [0, 1, 0, 0]
-#
-# 1 = Queen
-# 0 = Empty
-# ----------------------------------------
+# --- Initialization ---
+board = [["." for _ in range(N)] for _ in range(N)]
+rows = [0] * N
+lower_diag = [0] * (2 * N - 1)
+upper_diag = [0] * (2 * N - 1)
 
-
-n = int(input("Enter Number of Queens: "))
-
-game = NQueen(n)
-
-if game.solve(0):
-
-    print("\nSolution Found")
-
-    game.display()
-
+print(f"--- Solving {N}-Queens Problem ---")
+if solve_n_queens(0, board, rows, lower_diag, upper_diag):
+    for r in board:
+        print("  ".join(r))
 else:
-
-    print("\nSolution Does Not Exist")
+    print("No solution exists.")
