@@ -1,7 +1,6 @@
 # Configuration
 N = 4
 
-
 def solve_n_queens(col, board, rows, lower_diag, upper_diag):
     # BASE CASE: If all queens are placed, we found a solution
     if col == N:

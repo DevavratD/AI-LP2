@@ -4,7 +4,17 @@ import heapq
 # 1. Goal Check Function
 def check_win(board, player):
     win_conds = [[0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8], [0,4,8], [2,4,6]]
-    return any(all(board[i] == player for i in combo) for combo in win_conds)
+    for combo in win_conds:
+        flag = True
+
+        for i in combo:
+            if board[i] != player:
+                flag = False
+
+        if flag:
+            return True
+
+        return False
 
 
 # 2. Heuristic Function h(n)
